@@ -1,2 +1,2 @@
 # Elobuddy
-Addons Developed by Zy0 ©
+Addons Developed by Zy0N
