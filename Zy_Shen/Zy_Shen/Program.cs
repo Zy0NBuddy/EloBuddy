@@ -50,7 +50,7 @@ namespace Zy_Shen
             if (_Player.ChampionName != "Shen")
                 return;
 
-            Chat.Print("Zy - Shen\tDeveloped by Zy0N");
+            Chat.Print("Zy - Shen\tDeveloped by Zy0N", Color.GreenYellow);
 
             Q = new Spell.Targeted(SpellSlot.Q, 440);
             W = new Spell.Active(SpellSlot.W);
