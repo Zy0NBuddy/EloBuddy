@@ -69,7 +69,7 @@ namespace Zy_Lux
 #region COMBO
                 SettingsMenu.AddLabel("COMBO");
                 SettingsMenu.Add("Qcombo", new CheckBox("Use Q", true));
-         //       SettingsMenu.Add("Wcombo", new CheckBox("Use W", true));
+                SettingsMenu.Add("Wcombo", new CheckBox("Use W", true));
           //      SettingsMenu.Add("autow", new CheckBox("Auto W on Turrets/Targetted Spells", true));
                 SettingsMenu.Add("Ecombo", new CheckBox("Use E", true));
                 SettingsMenu.Add("Rcombo", new CheckBox("Use R", true));
@@ -205,7 +205,7 @@ namespace Zy_Lux
         private static void Combo()
             {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Magical);
-            var t = TargetSelector.GetTarget((W.Range/4), DamageType.Magical);
+            var t = TargetSelector.GetTarget(500, DamageType.Magical);
             var target2 = TargetSelector.GetTarget(R.Range, DamageType.Magical);
             var useQ = SettingsMenu["Qcombo"].Cast<CheckBox>().CurrentValue;
             var useW = SettingsMenu["Wcombo"].Cast<CheckBox>().CurrentValue;
@@ -215,6 +215,11 @@ namespace Zy_Lux
             if (useQ && Q.IsReady() && target.IsValidTarget(Q.Range) && !target.IsZombie && !target.IsDead)
             {
                 Q.Cast(target);
+                if (!E.IsReady() && useR && R.IsReady() && target2.IsValidTarget(R.Range) && !target2.IsZombie &&
+                    !target2.IsInvulnerable && target2.Health <= _Player.GetSpellDamage(target2, SpellSlot.R))
+                {
+                    R.Cast(target2);
+                }
             }
 
             if (E.IsReady() && useE && target.IsValidTarget() && !target.IsZombie && !target.IsDead && !target.IsInvulnerable)
@@ -301,7 +306,7 @@ namespace Zy_Lux
                     }
                     if (Target1.IsValidTarget() && useW && W.IsReady())
                     {
-                        W.Cast();
+                        W.Cast(Target1);
                     }
                     if (Target1.IsValidTarget() && E.IsReady() && useE && E.IsInRange(Target1))
                     {
