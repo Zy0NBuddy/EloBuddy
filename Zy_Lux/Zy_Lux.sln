@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zy_Lux", "Zy_Lux\Zy_Lux.csproj", "{B455ADE9-FE2D-4632-985A-4FA273811320}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zy_Lux", "Zy_Lux\Zy_Lux.csproj", "{BC5AA392-81A3-43DA-B8BB-442337B8B7DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B455ADE9-FE2D-4632-985A-4FA273811320}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B455ADE9-FE2D-4632-985A-4FA273811320}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B455ADE9-FE2D-4632-985A-4FA273811320}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B455ADE9-FE2D-4632-985A-4FA273811320}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC5AA392-81A3-43DA-B8BB-442337B8B7DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC5AA392-81A3-43DA-B8BB-442337B8B7DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC5AA392-81A3-43DA-B8BB-442337B8B7DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC5AA392-81A3-43DA-B8BB-442337B8B7DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
