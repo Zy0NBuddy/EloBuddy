@@ -167,27 +167,27 @@ namespace Zy_Ekko
             var useW = SettingsMenu["Wcombo"].Cast<CheckBox>().CurrentValue;
             var useR = SettingsMenu["Rcombo"].Cast<CheckBox>().CurrentValue;
             var useE = SettingsMenu["Ecombo"].Cast<CheckBox>().CurrentValue;
-            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            var target1 = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
             var target2 = TargetSelector.GetTarget(1000, DamageType.Magical);
-            var targetu = TargetSelector.GetTarget(R.Range, DamageType.Magical);
+            var target = TargetSelector.GetTarget(R.Range, DamageType.Magical);
 
 
-            if (useQ && Q.IsReady() && target.IsValidTarget() && !target.IsZombie && !target.IsDead)
+            if (useQ && Q.IsReady() && target1.IsValidTarget() && !target1.IsZombie && !target1.IsDead)
             {
-                Q.Cast(target);
+                Q.Cast(target1);
             }
             if (useW && W.IsReady() && target2.IsValidTarget() && !target2.IsZombie && !target2.IsDead)
             {
                 W.Cast(target2);
             }
 
-            if (E.IsReady() && useE && target.IsValidTarget() && !target.IsZombie && !target.IsDead)
+            if (E.IsReady() && useE && target1.IsValidTarget() && !target1.IsZombie && !target1.IsDead)
             {
-                E.Cast(target);
+                E.Cast(target1);
             }
 
 
-            if (useR && R.IsReady() && targetu.IsValidTarget() && !targetu.IsZombie && !targetu.IsDead && targetu.Distance(EkkoGhost.Position) <= 375 && targetu.Health <= RDamage(targetu))
+            if (useR && R.IsReady() && target2.IsValidTarget() && !target2.IsZombie && !target2.IsDead && target2.Distance(EkkoGhost.Position) <= 375 && target2.Health <= _Player.GetSpellDamage(target2, SpellSlot.R))
             {
                 R.Cast(_Player);
             }
