@@ -41,6 +41,7 @@ namespace Zy_Brand
             Chat.Print("Zy - Brand Loaded", Color.GreenYellow);
 
             Q = new Spell.Skillshot(SpellSlot.Q, 1050, SkillShotType.Linear);
+            Q.AllowedCollisionCount = int.MaxValue;
             W = new Spell.Skillshot(SpellSlot.W, 845, SkillShotType.Circular);
             E = new Spell.Targeted(SpellSlot.E, 585);
             R = new Spell.Targeted(SpellSlot.R, 700);
