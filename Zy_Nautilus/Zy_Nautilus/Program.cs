@@ -93,6 +93,7 @@ namespace Zy_Nautilus
             Chat.Print("Zy - Nautilus Loaded", Color.GreenYellow);
 
             Q = new Spell.Skillshot(SpellSlot.Q, 950, SkillShotType.Linear);
+            Q.AllowedCollisionCount = int.MaxValue;
             W = new Spell.Active(SpellSlot.W);
             E = new Spell.Active(SpellSlot.E, 600);
             R = new Spell.Targeted(SpellSlot.R, 825);
