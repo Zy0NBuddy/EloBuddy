@@ -52,9 +52,10 @@ namespace Zy_Lux
                 if (_Player.ChampionName != "Lux")
                     return;
 
-                Chat.Print("Zy_Lux \t- LOADED", Color.GreenYellow);
+                Chat.Print("Zy_Lux ↔ LOADED", Color.GreenYellow);
 
                 Q = new Spell.Skillshot(SpellSlot.Q, 1175, SkillShotType.Linear);
+                Q.AllowedCollisionCount = int.MaxValue;
                 W = new Spell.Skillshot(SpellSlot.W, 1075, SkillShotType.Linear);
                 E = new Spell.Skillshot(SpellSlot.E, 1050, SkillShotType.Circular);
                 R = new Spell.Skillshot(SpellSlot.R, 3300, SkillShotType.Linear);
