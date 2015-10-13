@@ -28,11 +28,11 @@ namespace Zy_Lux
         public static Spell.Skillshot W;
         public static Spell.Skillshot E;
         public static Spell.Skillshot R;
-  /*      private static readonly Spell.Targeted Ignite =
-            new Spell.Targeted(_Player.GetSpellSlotFromName("summonerdot"), 600);*/
+        private static readonly Spell.Targeted Ignite =
+            new Spell.Targeted(_Player.GetSpellSlotFromName("summonerdot"), 600);
 
         public static Menu Menu, SettingsMenu, Misc;
-     //  public static Vector3 castpos;
+        public static Vector3 castpos;
         public static GameObject LuxEGameObject;
 
         private static string[] JungleMobsList =
@@ -52,10 +52,9 @@ namespace Zy_Lux
                 if (_Player.ChampionName != "Lux")
                     return;
 
-                Chat.Print("Zy_Lux ↔ LOADED", Color.GreenYellow);
+                Chat.Print("Zy_Lux - LOADED", Color.GreenYellow);
 
                 Q = new Spell.Skillshot(SpellSlot.Q, 1175, SkillShotType.Linear);
-                Q.AllowedCollisionCount = int.MaxValue;
                 W = new Spell.Skillshot(SpellSlot.W, 1075, SkillShotType.Linear);
                 E = new Spell.Skillshot(SpellSlot.E, 1050, SkillShotType.Circular);
                 R = new Spell.Skillshot(SpellSlot.R, 3300, SkillShotType.Linear);
@@ -70,8 +69,6 @@ namespace Zy_Lux
 #region COMBO
                 SettingsMenu.AddLabel("COMBO");
                 SettingsMenu.Add("Qcombo", new CheckBox("Use Q", true));
-                SettingsMenu.Add("Wcombo", new CheckBox("Use W", true));
-          //      SettingsMenu.Add("autow", new CheckBox("Auto W on Turrets/Targetted Spells", true));
                 SettingsMenu.Add("Ecombo", new CheckBox("Use E", true));
                 SettingsMenu.Add("Rcombo", new CheckBox("Use R", true));
                 
@@ -92,22 +89,20 @@ namespace Zy_Lux
             SettingsMenu.Add("Eh", new CheckBox("Use E"));
 #endregion HARASS
 #region MISC
-            Misc = Menu.AddSubMenu("Misc", "misc");
+                Misc = Menu.AddSubMenu("Misc", "misc");
                 Misc.AddGroupLabel("MISCELLANEOUS");
+                Misc.AddLabel("AUTO SPELL");
+                Misc.Add("auto", new CheckBox("Use AutoSpell", true));
                 Misc.AddLabel("DRAWING");
                 Misc.Add("Qdrawn", new CheckBox("Drawn Q"));
                 Misc.Add("Edrawn", new CheckBox("Drawn E"));
                 Misc.Add("Rdrawn", new CheckBox("Drawn R"));
-          //      Misc.Add("RdrawnMINI", new CheckBox("Drawn R on MiniMap", true));
                 Misc.AddLabel("HP info Ally");
                 Misc.Add("allyhp", new CheckBox("Drawn HP info"));
                 Misc.AddLabel("SMART KS");
-              //  Misc.Add("KSI", new CheckBox("Use Ignite", true));
                 Misc.Add("KSQ", new CheckBox("Use Q", true));
                 Misc.Add("KSE", new CheckBox("Use E", true));
                 Misc.Add("KSR", new CheckBox("Use R", true));
-      //          Misc.AddLabel("ANTI GAP");
-//                  Misc.Add("AntiGapQ", new CheckBox("Use Q", true));
                 Misc.AddLabel("JUNGLE STEAL");
                 Misc.Add("ksjg", new KeyBind("ULT Steal Drag/Baron R", false, KeyBind.BindTypes.HoldActive));
             if (Game.MapId == GameMapId.SummonersRift)
@@ -120,6 +115,7 @@ namespace Zy_Lux
 
             Game.OnTick += Game_OnTick;
                 Drawing.OnDraw += Drawing_OnDraw;
+            
         }
         
         private static void Autospells()
@@ -131,14 +127,15 @@ namespace Zy_Lux
                 return;
             if (Q.IsReady() && target.IsValidTarget(Q.Range) && Q.GetPrediction(target).HitChance >= HitChance.High)
             {
-                if (target.HasBuffOfType(BuffType.Snare)
+                Q.Cast(target);
+                    if (target.HasBuffOfType(BuffType.Snare)
                     || target.HasBuffOfType(BuffType.Suppression)
                     || target.HasBuffOfType(BuffType.Taunt)
                     || target.HasBuffOfType(BuffType.Stun)
                     || target.HasBuffOfType(BuffType.Charm)
                     || target.HasBuffOfType(BuffType.Fear))
 
-                    Q.Cast(target);
+                    E.Cast(target);
             }
         }
         private static void Game_OnTick(EventArgs args)
@@ -147,7 +144,7 @@ namespace Zy_Lux
 
 
                 KillSteal();
-                Autospells();
+                if(Misc["auto"].Cast<CheckBox>().CurrentValue){ Autospells();}
                 JgSteal();
 
                 if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
@@ -176,10 +173,6 @@ namespace Zy_Lux
             var target = TargetSelector.GetTarget(E.Range + E.Width, DamageType.Magical);
             var epred = E.GetPrediction(target);
             
-
-           /* if (LuxEGameObject != null && E.IsReady() && LuxEGameObject.Position.CountEnemiesInRange(E.Width) < 1)
-                Utility.DelayAction.Add(2000, () => E.Cast()); */
-
             if (target.IsInvulnerable)
                 return;
 
@@ -206,32 +199,22 @@ namespace Zy_Lux
         private static void Combo()
             {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Magical);
-            var t = TargetSelector.GetTarget(500, DamageType.Magical);
             var target2 = TargetSelector.GetTarget(R.Range, DamageType.Magical);
             var useQ = SettingsMenu["Qcombo"].Cast<CheckBox>().CurrentValue;
-            var useW = SettingsMenu["Wcombo"].Cast<CheckBox>().CurrentValue;
+            Q.AllowedCollisionCount = int.MaxValue;
             var useE = SettingsMenu["Ecombo"].Cast<CheckBox>().CurrentValue;
             var useR = SettingsMenu["Rcombo"].Cast<CheckBox>().CurrentValue;
 
             if (useQ && Q.IsReady() && target.IsValidTarget(Q.Range) && !target.IsZombie && !target.IsDead)
             {
                 Q.Cast(target);
-                if (!E.IsReady() && useR && R.IsReady() && target2.IsValidTarget(R.Range) && !target2.IsZombie &&
-                    !target2.IsInvulnerable && target2.Health <= _Player.GetSpellDamage(target2, SpellSlot.R))
-                {
-                    R.Cast(target2);
-                }
             }
 
             if (E.IsReady() && useE && target.IsValidTarget() && !target.IsZombie && !target.IsDead && !target.IsInvulnerable)
             {
                 E.Cast(target);
             }
-
-            if (useW && W.IsReady() && t.IsValidTarget())
-            {
-                W.Cast(target);
-            }
+            
             if (!E.IsReady() && useR && R.IsReady() && target2.IsValidTarget(R.Range) && !target2.IsZombie && !target2.IsInvulnerable && target2.Health <= _Player.GetSpellDamage(target2, SpellSlot.R))
             {
                 R.Cast(target2);
@@ -249,27 +232,23 @@ namespace Zy_Lux
                     Elogic(); //check isso
                 } 
         }
+
         private static void LaneClear()
+        {
+
+            var useE = SettingsMenu["Elc"].Cast<CheckBox>().CurrentValue;
+            var minionlc = SettingsMenu["minionw"].Cast<Slider>().CurrentValue;
+            var manalc = SettingsMenu["mana.lane"].Cast<Slider>().CurrentValue;
+            if (_Player.ManaPercent <= manalc) return;
+            IEnumerable<Obj_AI_Minion> ListMinions = EntityManager.MinionsAndMonsters.EnemyMinions.Where(x => x.Distance(_Player)<= E.Range);
+            
+            if (ListMinions.Any())
             {
-
-                var useE = SettingsMenu["Elc"].Cast<CheckBox>().CurrentValue;
-                var minionlc = SettingsMenu["minionw"].Cast<Slider>().CurrentValue;
-                var manalc = SettingsMenu["mana.lane"].Cast<Slider>().CurrentValue;
-                var minionCount =
-                    EntityManager.GetLaneMinions(EntityManager.UnitTeam.Enemy, _Player.Position.To2D(), E.Range)
-                        .FirstOrDefault();
-                if (minionCount == null)
-                    return;
-                var minion = minionCount;
-                var Efarm = EntityManager.GetLaneMinions(EntityManager.UnitTeam.Enemy, _Player.Position.To2D(), E.Range);
-                if (Efarm == null)
-                    return;
-                if (useE && E.IsReady() && minion.IsValidTarget(E.Range) && Efarm.Count >= minionlc &&
-                        _Player.ManaPercent >= manalc)
+                if (useE && ListMinions.Count() >= minionlc)
                 {
-                    E.Cast(Efarm.OrderBy(x => x.IsValid()).FirstOrDefault().ServerPosition);
+                    E.Cast(ListMinions.First().Position);
                 }
-
+            }
             }
         private static void JungleClear()
             {
@@ -277,48 +256,47 @@ namespace Zy_Lux
                 var useQ = SettingsMenu["Qjg"].Cast<CheckBox>().CurrentValue;
                 var useW = SettingsMenu["Wjg"].Cast<CheckBox>().CurrentValue;
                 var useE = SettingsMenu["Ejg"].Cast<CheckBox>().CurrentValue;
-                var Target1 = EntityManager.GetJungleMonsters(_Player.ServerPosition.To2D(), Q.Range, true).FirstOrDefault();
-                var Target2 =
-                    ObjectManager.Get<Obj_AI_Base>()
-                        .Where(u => u.IsVisible && JungleMobsList.Contains(u.BaseSkinName))
-                        .FirstOrDefault();
-                // var eTarget = EntityManager.GetJungleMonsters(_Player.ServerPosition.To2D(), E.Radius, true);
-                if (Target2 != null)
+
+
+            var qminion = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.ServerPosition,
+                Q.Range);
+            
+
+            if (useQ && Q.IsReady())
+            {
+                foreach (var minion in qminion)
                 {
-                    if (Target2.IsValidTarget() && useQ && Q.IsReady() && Q.IsInRange(Target2))
-                    {
-                        Q.Cast(Target2);
-                    }
-                    if (Target2.IsValidTarget() && useW && W.IsReady())
-                    {
-                        W.Cast(Target2);
-                    }
-                    if (Target2.IsValidTarget() && E.IsReady() && useE && E.IsInRange(Target2))
-                    {
-                        E.Cast(Target2);
-                    }
+                    Q.Cast(minion);
                 }
-
-                if (Target1 != null)
-                {
-                    if (Target1.IsValidTarget() && useQ && Q.IsReady() && Q.IsInRange(Target1))
-                    {
-                        Q.Cast(Target1);
-                    }
-                    if (Target1.IsValidTarget() && useW && W.IsReady())
-                    {
-                        W.Cast(Target1);
-                    }
-                    if (Target1.IsValidTarget() && E.IsReady() && useE && E.IsInRange(Target1))
-                    {
-                        E.Cast(Target1.ServerPosition);
-                    }
-                }
-
-
-
-
             }
+
+            if (useW && W.IsReady())
+            {
+                foreach (var minion in qminion)
+                {
+                    if (_Player.Distance(minion) <= W.Range)
+                    {
+                        W.Cast(_Player);
+                    }
+                }
+            }
+
+            if (useE && E.IsReady())
+            {
+                foreach (var minion in qminion)
+                {
+                    if (_Player.Distance(minion) <= E.Range)
+                    {
+                        E.Cast(minion);
+                    }
+                }
+            }
+            
+
+
+
+
+        }
         private static void KillSteal()
             {
                 var targetq = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
@@ -347,6 +325,7 @@ namespace Zy_Lux
                     R.Cast(targetR);
                 }
             }
+
         private static void JgSteal()
         {
             var useR = Misc["ksjg"].Cast<KeyBind>().CurrentValue;
@@ -367,6 +346,7 @@ namespace Zy_Lux
                 }
             }
         }
+
         private static void DrawHealths()
             {
 
@@ -386,7 +366,7 @@ namespace Zy_Lux
                             champion = champion.Remove(7) + "..";
                         }
                         var percent = (int)(hero.Health / hero.MaxHealth * 100);
-                        // da pra usar isso pra chegar o hp do aliado //
+            
                         var color = Color.Red;
                         if (percent > 25)
                         {
@@ -434,6 +414,6 @@ namespace Zy_Lux
                 }
 
             }
-
-        }
+     
+    }
     }
