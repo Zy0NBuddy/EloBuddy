@@ -140,7 +140,7 @@ namespace Zy_Lux
         }
         private static void Game_OnTick(EventArgs args)
             {
-                if (_Player.IsDead || MenuGUI.IsChatOpen || _Player.IsRecalling) return;
+                if (_Player.IsDead || _Player.IsRecalling()) return;
 
 
                 KillSteal();
