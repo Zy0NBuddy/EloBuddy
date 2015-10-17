@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,7 +87,9 @@ namespace Zy_Lux
             #endregion FARM
 #region HARASS
             SettingsMenu.AddLabel("HARASS");
+            SettingsMenu.Add("Qh", new CheckBox("Use Q", true));
             SettingsMenu.Add("Eh", new CheckBox("Use E"));
+                
 #endregion HARASS
 #region MISC
                 Misc = Menu.AddSubMenu("Misc", "misc");
@@ -168,34 +171,7 @@ namespace Zy_Lux
 
                 }
             }
-        private static void Elogic()
-        {
-            var target = TargetSelector.GetTarget(E.Range + E.Width, DamageType.Magical);
-            var epred = E.GetPrediction(target);
-            
-            if (target.IsInvulnerable)
-                return;
-
-            if (target.HasBuff("luxilluminatingfraulein") && target.HasBuff("LuxLightBindingMis") &&
-                _Player.Distance(target.Position) <= _Player.GetAutoAttackRange(_Player))
-                return;
-
-            if (LuxEGameObject != null
-                && LuxEGameObject.Position.CountEnemiesInRange(300) >= 1)
-                E.Cast();
-
-            if (LuxEGameObject != null
-                && target.HasBuffOfType(BuffType.Slow))
-                E.Cast();
-
-            if (LuxEGameObject != null)
-                return;
-
-            if (epred.HitChance >= HitChance.High)
-                E.Cast(epred.CastPosition);
-            else if (epred.HitChance >= HitChance.High)
-                E.Cast(epred.CastPosition);
-        }
+        
         private static void Combo()
             {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Magical);
@@ -223,14 +199,28 @@ namespace Zy_Lux
         }
         private static void Harass()
             {
-            
-                var useE = SettingsMenu["Eh"].Cast<CheckBox>().CurrentValue;
+                var useQ = SettingsMenu["Qh"].Cast<CheckBox>().CurrentValue;
+            Q.AllowedCollisionCount = int.MaxValue;
+            var useE = SettingsMenu["Eh"].Cast<CheckBox>().CurrentValue;
                 var target = TargetSelector.GetTarget(E.Range, DamageType.Magical);
-                if (useE && E.IsReady() && target.IsValidTarget(E.Range) && !target.IsZombie && !target.IsInvulnerable &&
+
+            if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range) && Q.GetPrediction(target).HitChance >= HitChance.High)
+            {
+                Q.Cast(target);
+                if (target.HasBuffOfType(BuffType.Snare)
+                || target.HasBuffOfType(BuffType.Suppression)
+                || target.HasBuffOfType(BuffType.Taunt)
+                || target.HasBuffOfType(BuffType.Stun)
+                || target.HasBuffOfType(BuffType.Charm)
+                || target.HasBuffOfType(BuffType.Fear))
+
+                    E.Cast(target);
+            }
+            if (useE && E.IsReady() && target.IsValidTarget(E.Range) && !target.IsZombie && !target.IsInvulnerable &&
                     !target.IsDead)
-                {
-                    Elogic(); //check isso
-                } 
+            {
+                E.Cast(target);
+            } 
         }
 
         private static void LaneClear()
